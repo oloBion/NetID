@@ -62,8 +62,13 @@ def msdial2netid(alignment_table_file, output_directory, msms_per_excel=100):
 
     netid_df = netid_df.reindex(columns=columns)
 
-    for c in samples.index:
-        netid_df[c] = df[c]
+    # export all sample columns
+    # for c in samples.index:
+    #     netid_df[c] = df[c]
+
+    # export sample columns with most intensities
+    col = (df[samples.index] > 0).sum().sort_values().index[-1]
+    netid_df[col] = df[col]
 
     netid_df.to_csv(output_directory / 'raw_data.csv', index=False)
 
