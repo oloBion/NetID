@@ -50,13 +50,14 @@ def msdial2netid(alignment_table_file, output_directory, msms_per_excel=100):
 
     samples, df = parse_alignment_table(alignment_table_file)
 
+    # build raw data
     netid_df = df[['Alignment ID', 'Average Mz', 'Average Rt(min)']]
     netid_df.columns = ['groupId', 'medMz', 'medRt']
 
     columns = [
         'label', 'metaGoupId', 'groupId', 'goodPeakCount', 'medMz',
         'medRt', 'maxQuality', 'isotopeLabel', 'compound', 'compoundId',
-        'formula', 'isotopeLabel', 'expectedRtDiff', 'ppmDiff', 'parent'
+        'formula', 'expectedRtDiff', 'ppmDiff', 'parent'
     ]
 
     netid_df = netid_df.reindex(columns=columns)
