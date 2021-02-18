@@ -88,10 +88,16 @@ def msdial2netid(alignment_table_file, output_directory, msms_per_excel=100):
         if counter > 0 and counter % msms_per_excel == 0 or counter == len(msms) - 1:
             writer = pd.ExcelWriter(output_directory / 'msms' / (alignment_table_file.stem + f'_msms_{counter // msms_per_excel:03d}.xlsx'))
 
-            metadata = pd.DataFrame(metadata)
-            metadata = metadata.reindex(columns=['Mass_m_z_', 'Formula_M_', 'FormulaType', 'Species', 'CS_z_', 'Polarity', 'Start_min_', 'End_min_', 'x_N_CEType', 'MSXID', 'Comment'])
-            metadata.to_excel(writer, index=False)
+            # add summary worksheet
+            summary = pd.DataFrame(metadata)
+            summary = summary.reindex(columns=['Mass_m_z_', 'Formula_M_', 'FormulaType', 'Species', 'CS_z_', 'Polarity', 'Start_min_', 'End_min_', 'x_N_CEType', 'MSXID', 'Comment'])
+            summary.to_excel(writer, index=False, sheet_name='Sheet1')
 
+            # add blank worksheet
+            pd.DataFrame().to_excel(writer, sheet_name='Sheet2')
+            pd.DataFrame().to_excel(writer, sheet_name='Sheet3')
+
+            # add MS/MS worksheets
             for i, s in enumerate(spectra):
                 s = pd.DataFrame([x.split(':') for x in s.strip().split()])
                 s.to_excel(writer, index=False, header=False, sheet_name=str(i + 2))
