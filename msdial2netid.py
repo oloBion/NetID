@@ -16,22 +16,22 @@ def parse_alignment_table(filename: str):
         # read the header from the MS-DIAL output
         reader = csv.reader(fin, delimiter='\t', quotechar='"')
         data = list(itertools.islice(reader, N_HEADER_ROWS + 1))
-        
+
         # count the number of metadata columns
         metadata_col_count = len(list(itertools.takewhile(lambda x: x == '', data[0])))
-        
+
         # drop the unwanted metadata
         data = [x[metadata_col_count:] for x in data][::-1]
-        
+
         # extract column and row names
         sample_names = data.pop(0)[1:]
         property_names = [x[0] for x in data]
         data = [x[1:] for x in data]
-        
+
         # build data frame and drop statistics columns
         samples = pd.DataFrame(data, columns=sample_names, index=property_names).transpose()
         samples = samples[samples.Class != 'NA']
-        
+
         # rename duplicate columns
         samples.columns = pd.io.parsers.ParserBase({'names': samples.columns})._maybe_dedup_names(samples.columns)
 
@@ -63,12 +63,12 @@ def msdial2netid(alignment_table_file, output_directory, msms_per_excel=100):
     netid_df = netid_df.reindex(columns=columns)
 
     # export all sample columns
-    # for c in samples.index:
-    #     netid_df[c] = df[c]
+    for c in samples.index:
+        netid_df[c] = df[c]
 
     # export sample columns with most intensities
-    col = (df[samples.index] > 0).sum().sort_values().index[-1]
-    netid_df[col] = df[col]
+    # col = (df[samples.index] > 0).sum().sort_values().index[-1]
+    # netid_df[col] = df[col]
 
     netid_df.to_csv(output_directory / 'raw_data.csv', index=False)
 
